@@ -6,7 +6,7 @@ import { Providers } from './providers'
 import { Toaster } from '@/components/ui/toaster'
 
 const inter = Inter({
-  subsets: ['latin'],
+  subsets: ['latin'], preload: false,
   display: 'swap',
   variable: '--font-inter',
   preload: true,
