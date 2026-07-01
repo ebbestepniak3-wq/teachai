@@ -1,0 +1,399 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  TEACHER
+  ADMIN
+  SUPPORT
+}
+
+enum Plan {
+  FREE
+  BASIC
+  PRO
+  MAX_PRO
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  TRIALING
+  INCOMPLETE
+}
+
+enum InvoiceStatus {
+  PAID
+  OPEN
+  VOID
+  UNCOLLECTIBLE
+}
+
+enum UploadStatus {
+  PENDING
+  PROCESSING
+  READY
+  FAILED
+}
+
+enum GradingStatus {
+  QUEUED
+  PROCESSING
+  DONE
+  FAILED
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum ActionType {
+  GRADING
+  ASSISTANT_MESSAGE
+  PDF_DOWNLOAD
+  UPLOAD
+  LOGIN
+  LOGOUT
+  PASSWORD_CHANGE
+  TWO_FACTOR_ENABLED
+  TWO_FACTOR_DISABLED
+}
+
+enum OAuthProvider {
+  GOOGLE
+  APPLE
+  MICROSOFT
+}
+
+enum NotificationType {
+  GRADING_DONE
+  GRADING_FAILED
+  SUBSCRIPTION_RENEWED
+  SUBSCRIPTION_EXPIRED
+  QUOTA_WARNING
+  SECURITY_ALERT
+  SYSTEM
+}
+
+model User {
+  id                   String   @id @default(cuid())
+  email                String   @unique
+  passwordHash         String?
+  name                 String
+  role                 Role     @default(TEACHER)
+  emailVerified        Boolean  @default(false)
+  avatarUrl            String?
+  bundesland           String?
+  schulform            String?
+  schule               String?
+  bio                  String?
+  faecher              String[] @default([])
+  klassen              String[] @default([])
+  language             String   @default("de")
+  timezone             String   @default("Europe/Berlin")
+  isActive             Boolean  @default(true)
+  isDeactivated        Boolean  @default(false)
+  twoFactorEnabled     Boolean  @default(false)
+  twoFactorSecret      String?
+  backupCodes          String[] @default([])
+  notifyGradingDone    Boolean  @default(true)
+  notifyQuotaWarning   Boolean  @default(true)
+  notifyNewsletter     Boolean  @default(false)
+  notifySecurityAlerts Boolean  @default(true)
+  notifyEmail          Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  subscription        Subscription?
+  invoices            Invoice[]
+  uploads             Upload[]
+  gradingJobs         GradingJob[]
+  gradingReports      GradingReport[]
+  conversations       AssistantConversation[]
+  supportTickets      SupportTicket[]
+  usageLogs           UsageLog[]
+  sessions            Session[]
+  oauthAccounts       OAuthAccount[]
+  verificationTokens  EmailVerificationToken[]
+  passwordResetTokens PasswordResetToken[]
+  notifications       Notification[]
+  loginHistory        LoginHistory[]
+
+  @@map("users")
+}
+
+model OAuthAccount {
+  id           String        @id @default(cuid())
+  userId       String
+  provider     OAuthProvider
+  providerId   String
+  accessToken  String?
+  refreshToken String?
+  expiresAt    DateTime?
+  createdAt    DateTime      @default(now())
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerId])
+  @@map("oauth_accounts")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  userAgent String?
+  ipAddress String?
+  country   String?
+  city      String?
+  expiresAt DateTime
+  lastUsed  DateTime @default(now())
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@map("sessions")
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(cuid())
+  userId    String
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("email_verification_tokens")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+model LoginHistory {
+  id         String   @id @default(cuid())
+  userId     String
+  ipAddress  String?
+  userAgent  String?
+  country    String?
+  success    Boolean
+  failReason String?
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("login_history")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  link      String?
+  metadata  Json?
+  createdAt DateTime         @default(now())
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("notifications")
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  userId               String             @unique
+  stripeCustomerId     String?            @unique
+  stripeSubscriptionId String?            @unique
+  plan                 Plan               @default(FREE)
+  status               SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean            @default(false)
+  trialEnd             DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model Invoice {
+  id              String        @id @default(cuid())
+  userId          String
+  stripeInvoiceId String?       @unique
+  amount          Int
+  currency        String        @default("eur")
+  status          InvoiceStatus @default(OPEN)
+  description     String?
+  pdfUrl          String?
+  createdAt       DateTime      @default(now())
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("invoices")
+}
+
+model Upload {
+  id          String       @id @default(cuid())
+  userId      String
+  fileName    String
+  fileSize    Int
+  fileType    String
+  storageKey  String       @unique
+  ocrText     String?      @db.Text
+  status      UploadStatus @default(PENDING)
+  pageCount   Int?
+  expiresAt   DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gradingJobs GradingJob[]
+
+  @@index([userId, status])
+  @@index([expiresAt])
+  @@map("uploads")
+}
+
+model GradingJob {
+  id               String        @id @default(cuid())
+  uploadId         String
+  userId           String
+  bundesland       String
+  schulform        String
+  klassenstufe     String
+  fach             String
+  aufgabentyp      String
+  bewertungsraster Json
+  lehrerHinweise   String?       @db.Text
+  status           GradingStatus @default(QUEUED)
+  tokensUsed       Int?
+  errorMessage     String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  upload           Upload        @relation(fields: [uploadId], references: [id], onDelete: Cascade)
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  report           GradingReport?
+
+  @@index([userId, status])
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("grading_jobs")
+}
+
+model GradingReport {
+  id                       String   @id @default(cuid())
+  gradingJobId             String   @unique
+  userId                   String
+  gesamtpunkte             Float
+  maximalpunkte            Float
+  note                     String
+  punkteVerteilung         Json
+  feedback                 String   @db.Text
+  staerken                 Json
+  schwaechen               Json
+  verbesserungsvorschlaege Json
+  zusammenfassung          String   @db.Text
+  lehrerAnmerkungen        String?  @db.Text
+  pdfStorageKey            String?
+  finalisiertVon           String   @default("AI")
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+  gradingJob               GradingJob @relation(fields: [gradingJobId], references: [id], onDelete: Cascade)
+  user                     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("grading_reports")
+}
+
+model AssistantConversation {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String   @default("Neues Gespräch")
+  messages  Json     @default("[]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, updatedAt(sort: Desc)])
+  @@map("assistant_conversations")
+}
+
+model SupportTicket {
+  id         String         @id @default(cuid())
+  userId     String
+  subject    String
+  status     TicketStatus   @default(OPEN)
+  priority   TicketPriority @default(MEDIUM)
+  messages   Json           @default("[]")
+  assignedTo String?
+  resolvedAt DateTime?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("support_tickets")
+}
+
+model UsageLog {
+  id        String     @id @default(cuid())
+  userId    String
+  action    ActionType
+  metadata  Json?
+  ipAddress String?
+  createdAt DateTime   @default(now())
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("usage_logs")
+}
+
+model SystemLog {
+  id        String   @id @default(cuid())
+  level     String
+  message   String
+  context   Json?
+  userId    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt(sort: Desc)])
+  @@index([userId])
+  @@map("system_logs")
+}
+
+// ── Performance Indexes (added in RC1) ────────────────────────────
+// These are separate via SQL migration for zero-downtime,
+// but Prisma can also manage them:
+
+// NOTE: Add these indexes to the models above for Prisma to manage.
+// For reference, the SQL equivalents are:
+// CREATE INDEX CONCURRENTLY idx_grading_jobs_user_status ON grading_jobs(user_id, status);
+// CREATE INDEX CONCURRENTLY idx_grading_jobs_created ON grading_jobs(created_at DESC);
+// CREATE INDEX CONCURRENTLY idx_uploads_user_status ON uploads(user_id, status);
+// CREATE INDEX CONCURRENTLY idx_uploads_expires ON uploads(expires_at) WHERE expires_at IS NOT NULL;
+// CREATE INDEX CONCURRENTLY idx_notifications_user_unread ON notifications(user_id, is_read);
+// CREATE INDEX CONCURRENTLY idx_system_logs_created ON system_logs(created_at DESC);
+// CREATE INDEX CONCURRENTLY idx_sessions_token ON sessions(token);
+// CREATE INDEX CONCURRENTLY idx_sessions_user ON sessions(user_id, expires_at);
+// CREATE INDEX CONCURRENTLY idx_conversations_user ON assistant_conversations(user_id, updated_at DESC);

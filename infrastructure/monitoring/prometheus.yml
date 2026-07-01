@@ -1,0 +1,36 @@
+# infrastructure/monitoring/prometheus.yml
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+  external_labels:
+    env: production
+    app: teachai
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
+rule_files:
+  - 'alerts.yml'
+
+scrape_configs:
+  - job_name: 'teachai-app'
+    static_configs:
+      - targets: ['web:3000']
+    metrics_path: '/api/metrics'
+    bearer_token: '${METRICS_TOKEN}'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:9113']
+
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

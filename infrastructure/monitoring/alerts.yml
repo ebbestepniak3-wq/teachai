@@ -1,0 +1,48 @@
+# infrastructure/monitoring/alerts.yml
+groups:
+  - name: teachai_alerts
+    rules:
+      - alert: HighMemoryUsage
+        expr: teachai_memory_percent > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage ({{ $value }}%)"
+          description: "TeacherAI is using more than 85% memory for 5 minutes."
+
+      - alert: HighErrorRate
+        expr: rate(teachai_request_errors_total[5m]) > 5
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High error rate"
+          description: "More than 5 errors per second for 2 minutes."
+
+      - alert: ServiceDown
+        expr: teachai_service_up{service!="Redis Cache"} < 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.service }} is down"
+          description: "{{ $labels.service }} has been down for more than 1 minute."
+
+      - alert: DatabaseDown
+        expr: teachai_service_up{service="PostgreSQL"} < 1
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database is down"
+          description: "PostgreSQL has been unreachable for 30 seconds."
+
+      - alert: HighResponseTime
+        expr: teachai_response_time_ms > 5000
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High response time ({{ $value }}ms)"
+          description: "Average response time exceeds 5 seconds."

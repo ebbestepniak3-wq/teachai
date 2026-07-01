@@ -1,0 +1,28 @@
+{
+  "name": "TeacherAI – KI-Bewertung für Lehrkräfte",
+  "short_name": "TeacherAI",
+  "description": "Klassenarbeiten in Minuten mit KI korrigieren. DSGVO-konform, transparent, für Lehrkräfte in Deutschland.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0d0f1a",
+  "theme_color": "#6271f6",
+  "orientation": "portrait-primary",
+  "lang": "de",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable any" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ],
+  "screenshots": [
+    { "src": "/screenshots/dashboard.png", "sizes": "1280x720", "type": "image/png", "label": "Dashboard" },
+    { "src": "/screenshots/upload.png",    "sizes": "1280x720", "type": "image/png", "label": "Upload" }
+  ],
+  "shortcuts": [
+    { "name": "Neue Bewertung", "url": "/upload",    "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Dashboard",     "url": "/dashboard", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
