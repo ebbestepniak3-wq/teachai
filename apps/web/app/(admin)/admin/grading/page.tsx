@@ -148,3 +148,4 @@ export default async function AdminGradingPage() {
     </div>
   )
 }
+export const dynamic = 'force-dynamic'

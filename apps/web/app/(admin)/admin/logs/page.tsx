@@ -126,3 +126,4 @@ export default async function AdminLogsPage() {
     </div>
   )
 }
+export const dynamic = 'force-dynamic'

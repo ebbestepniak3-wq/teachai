@@ -121,3 +121,4 @@ export default async function AdminSupportPage() {
     </div>
   )
 }
+export const dynamic = 'force-dynamic'

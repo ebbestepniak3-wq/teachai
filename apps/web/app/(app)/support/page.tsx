@@ -173,3 +173,4 @@ export default async function SupportPage() {
     </div>
   )
 }
+export const dynamic = 'force-dynamic'

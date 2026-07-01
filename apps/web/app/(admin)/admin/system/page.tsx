@@ -200,3 +200,4 @@ export default async function AdminSystemPage() {
     </div>
   )
 }
+export const dynamic = 'force-dynamic'

@@ -101,3 +101,4 @@ export default async function AdminBillingPage() {
     </div>
   )
 }
+export const dynamic = 'force-dynamic'

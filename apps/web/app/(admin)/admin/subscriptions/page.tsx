@@ -135,3 +135,4 @@ export default async function AdminSubscriptionsPage() {
     </div>
   )
 }
+export const dynamic = 'force-dynamic'

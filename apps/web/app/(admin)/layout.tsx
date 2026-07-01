@@ -1,7 +1,7 @@
 // app/(admin)/layout.tsx
 import { redirect } from 'next/navigation'
 import { getServerUser } from '@/lib/auth'
-import { AppSidebar } from '@/components/shared/sidebar'
+import { Sidebar } from '@/components/shared/sidebar'
 import { AppHeader } from '@/components/shared/app-header'
 import { prisma } from '@/lib/prisma'
 import { Badge } from '@/components/ui/badge'
@@ -19,7 +19,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      <AppSidebar isAdmin />
+      <Sidebar isAdmin />
       <div className="flex flex-1 flex-col overflow-hidden">
         <AppHeader
           user={{

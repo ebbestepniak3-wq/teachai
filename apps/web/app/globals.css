@@ -123,7 +123,7 @@ code, kbd { font-feature-settings: normal; }
 
   /* Card effects */
   .card-hover {
-    @apply transition-all duration-250 ease-out;
+    @apply transition-all duration-200 ease-out;
     box-shadow: var(--shadow-sm);
   }
   .card-hover:hover {

@@ -197,3 +197,4 @@ export default async function StatisticsPage() {
     </div>
   )
 }
+export const dynamic = 'force-dynamic'

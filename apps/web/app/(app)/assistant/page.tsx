@@ -75,3 +75,4 @@ export default async function AssistantPage() {
     />
   )
 }
+export const dynamic = 'force-dynamic'

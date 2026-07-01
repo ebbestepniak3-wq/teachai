@@ -74,3 +74,4 @@ export default async function UploadPage() {
     </div>
   )
 }
+export const dynamic = 'force-dynamic'
