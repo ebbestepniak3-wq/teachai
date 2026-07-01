@@ -8,9 +8,9 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "next build",
-    "dev": "turbo run dev --parallel",
-    "lint": "turbo run lint",
+    "build": "cd apps/web && next build",
+    "dev": "cd apps/web && next dev",
+    "lint": "cd apps/web && next lint",
     "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "type-check": "turbo run type-check",
