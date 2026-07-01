@@ -10,7 +10,6 @@ import { calculateExpiryDate, formatBytes } from '@/lib/upload/config'
 import type { PlanKey } from '@/lib/upload/config'
 
 // Max request body: 55MB (largest single file + form data overhead)
-export const config = { api: { bodyParser: false } }
 
 export async function POST(request: NextRequest) {
   const jwtUser = await getServerUser()
