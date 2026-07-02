@@ -46,7 +46,7 @@ export default async function DashboardPage() {
       subscription: true,
       gradingJobs: {
         where: { createdAt: { gte: startOfMonth }, status: 'DONE' },
-        select: { id: true, fach: true, note: true, createdAt: true, status: true },
+        select: { id: true, fach: true, createdAt: true, status: true },
         orderBy: { createdAt: 'desc' },
         take: 5,
       },
@@ -203,9 +203,9 @@ export default async function DashboardPage() {
                           <p className="text-sm font-semibold truncate">{job.fach}</p>
                           <p className="text-xs text-muted-foreground">{formatDate(job.createdAt)}</p>
                         </div>
-                        {job.note && (
+                        (
                           <div className="shrink-0 text-right">
-                            <span className="text-xl font-black gradient-text">{job.note}</span>
+                            <span className="text-xl font-black gradient-text">{""</span>
                           </div>
                         )}
                         <ChevronRight className="h-4 w-4 text-muted-foreground/40 shrink-0 group-hover:text-muted-foreground transition-colors" />
