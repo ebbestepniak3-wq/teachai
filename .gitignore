@@ -67,3 +67,4 @@ Thumbs.db
 uploads/
 tmp/
 !apps/web/node_modules/class-variance-authority
+!apps/web/node_modules
