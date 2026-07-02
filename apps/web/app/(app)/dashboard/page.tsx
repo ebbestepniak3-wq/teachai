@@ -203,11 +203,6 @@ export default async function DashboardPage() {
                           <p className="text-sm font-semibold truncate">{job.fach}</p>
                           <p className="text-xs text-muted-foreground">{formatDate(job.createdAt)}</p>
                         </div>
-                        (
-                          <div className="shrink-0 text-right">
-                            <span className="text-xl font-black gradient-text">{""</span>
-                          </div>
-                        )}
                         <ChevronRight className="h-4 w-4 text-muted-foreground/40 shrink-0 group-hover:text-muted-foreground transition-colors" />
                       </div>
                     </Link>
