@@ -22,12 +22,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <Sidebar isAdmin />
       <div className="flex flex-1 flex-col overflow-hidden">
         <AppHeader
-          user={{
-            name: user.name,
-            email: user.email,
-            avatarUrl: user.avatarUrl,
-            plan: user.subscription?.plan || 'FREE',
-          }}
+          userName={user.name}
+          userRole={user.role}
         />
         {/* Admin banner */}
         <div className="flex items-center gap-2 border-b border-amber-500/20 bg-amber-500/5 px-6 py-2">
