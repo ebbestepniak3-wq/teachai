@@ -1,6 +1,6 @@
 {
-  "buildCommand": "cd apps/web && NEXT_TELEMETRY_DISABLED=1 npx next build",
+  "installCommand": "cd apps/web && npm install",
+  "buildCommand": "cd apps/web && npx next build",
   "outputDirectory": "apps/web/.next",
-  "installCommand": "npm install",
   "framework": "nextjs"
 }
