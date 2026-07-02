@@ -11,7 +11,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "postinstall": "cd ../.. && npx prisma generate --schema=packages/database/prisma/schema.prisma"
+    "postinstall": "cd ../.. && npx prisma@5.22.0 generate --schema=packages/database/prisma/schema.prisma"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.30.0",
