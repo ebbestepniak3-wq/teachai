@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "description": "TeacherAI – KI-gestützte Korrekturplattform für Lehrkräfte in Deutschland",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
     "build": "cd apps/web && next build",
     "dev": "cd apps/web && next dev",
